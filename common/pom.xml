@@ -51,7 +51,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>com.fpx.abebe.salesforce.CriteriaTest</mainClass>
+							<mainClass>com.fpx.abebe.salesforce.ProtoTypeRunner</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

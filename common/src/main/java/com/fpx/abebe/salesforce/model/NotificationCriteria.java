@@ -4,24 +4,26 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
-@Entity(name="NotificationCriteriaTable")
-public class NotificationCriteria 
+@Entity
+@Table(name="NotificationCriteriaTable")
+public class NotificationCriteria
 {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int id;
 	private String expression;
-	private User owner;
+	private String ownerId;
 
 	public NotificationCriteria()
 	{
 	}
 
-	public NotificationCriteria(String expression, User owner) 
+	public NotificationCriteria(String expression, String ownerId) 
 	{
 		this.expression = expression;
-		this.owner = owner;
+		this.ownerId = ownerId;
 	}
 
 	public int getId() {
@@ -34,10 +36,10 @@ public class NotificationCriteria
 	public void setExpression(String expression) {
 		this.expression = expression;
 	}
-	public User getOwner() {
-		return owner;
+	public String getOwnerId() {
+		return ownerId;
 	}
-	public void setOwnerId(User owner) {
-		this.owner = owner;
+	public void setOwnerId(String ownerId) {
+		this.ownerId = ownerId;
 	}
 }

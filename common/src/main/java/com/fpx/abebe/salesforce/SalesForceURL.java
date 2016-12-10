@@ -8,8 +8,10 @@ public class SalesForceURL
 	private final static String loginURL     = "https://login.salesforce.com";
 	private final static String grantService = "/services/oauth2/token?grant_type=password";
 	private final static String restEndPoint = "/services/data" ;
-	private final static String apiVersion   = "/v37.0" ;
-	
+	private final static double apiVersionNumber = 37.0;
+	private final static String apiVersion    = "/v" +  String.format("%2.1f",apiVersionNumber);
+	private final static String cometdEndpoint = "/cometd/" + String.format("%2.1f",apiVersionNumber);
+
 	public static String getLoginURL() {
 		return loginURL;
 	}
@@ -22,7 +24,9 @@ public class SalesForceURL
 	public static String getApiVersion() {
 		return apiVersion;
 	}	
-	
+	public static double getApiVersionNumber() {
+		return apiVersionNumber;
+	}	
 	public static String getLoginURL(Credential credential)
 	{
 		String url = String.format("%s%s&client_id=%s&client_secret=%s&username=%s&password=%s",
@@ -45,5 +49,31 @@ public class SalesForceURL
 				);
 		return url;
 	}
+	public static String getSObjectURL(Access access,String objectType) 
+	{
+
+		return String.format("%s%s%s/sobjects/%s",
+				access.getInstanceURL(),
+				SalesForceURL.getRestEndPoint(),
+				SalesForceURL.getApiVersion(),
+				objectType
+				);
+	}
+	public static String getCometdEndpoint() 
+	{
+		return cometdEndpoint;
+	}
+	public static String getStreamingEndpoint(Access access)
+	{
+		return String.format("%s%s",
+				access.getInstanceURL(),
+				SalesForceURL.getCometdEndpoint()
+				);
+	}
+	public static String getStreamingChannelUrl(String pushTopicName) 
+	{
+		return String.format("/topic/%s",pushTopicName);
+	}
 	
+
 }

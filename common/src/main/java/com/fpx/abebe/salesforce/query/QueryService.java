@@ -34,7 +34,6 @@ public class QueryService extends SalesForceService
 			throws ClientProtocolException, IOException, InstantiationException, IllegalAccessException
 	{
 		QueryResult<?> result = clazz.newInstance(); 
-		System.out.println(result.getAllPropertiesNames());
 		String queryUrl = String.format("%s/?q=SELECT+%s+FROM+%s",
 				SalesForceURL.getQueryURL(access),
 				result.getAllPropertiesNames(),
@@ -44,9 +43,6 @@ public class QueryService extends SalesForceService
 		httpGet.addHeader(access.getOAuthHeader());
 		HttpResponse response = this.getClientConnection().getClient().execute(httpGet);
 		String responseString = EntityUtils.toString(response.getEntity());
-		
-		System.out.println("QUERY RESPONSE " + responseString);
-		
 		ObjectMapper mapper = new ObjectMapper();
 		result = mapper.readValue(responseString, 
 				result.getClass());
@@ -58,7 +54,6 @@ public class QueryService extends SalesForceService
 			throws ClientProtocolException, IOException, InstantiationException, IllegalAccessException
 	{
 		QueryResult<?> result = clazz.newInstance(); 
-		System.out.println(result.getAllPropertiesNames());
 		String queryUrl = String.format("%s/?q=SELECT+%s+FROM+%s",
 				SalesForceURL.getQueryURL(access),
 				result.getAllPropertiesNames(),

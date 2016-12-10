@@ -14,23 +14,29 @@ public class NotificationCriteriaCollection
 	private List<NotificationCriteria> result = new ArrayList<NotificationCriteria>(); 
 	public void collect(Session session,User user)
 	{
+		this.getResult().clear();
+		this.collectInternal(session, user);
+	}
+
+	private void collectInternal(Session session,User user)
+	{
 		if(user != null)
 		{
 			String managerId = user.getManagerId();
 			if(managerId != null)
 			{
 				User manager = session.get(User.class, managerId);
-				this.collect(session, manager);
+				this.collectInternal(session, manager);
 			}
 			Query<NotificationCriteria> query = session.createQuery(
-					"from NotificationCriteria where owner =:owner",
+					"from NotificationCriteria where ownerId =:ownerId",
 					NotificationCriteria.class); 
-			query.setParameter("owner", user);
+			query.setParameter("ownerId", user.getId());
 			List<NotificationCriteria> queryResult = query.getResultList();
 			this.addToCollection(queryResult);		
 		}
 	}
-
+	
 	private void addToCollection(List<NotificationCriteria> queryResult) 
 	{
 		if(queryResult != null)

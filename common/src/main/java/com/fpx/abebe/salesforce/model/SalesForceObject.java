@@ -8,12 +8,13 @@ import java.util.TimeZone;
 
 public abstract class SalesForceObject 
 {
-	static DateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+	static DateFormat timeParser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+	static DateFormat timeParserNoZone = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss.SSS");
+	static DateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd");
 	static 
 	{
 		dateParser.setTimeZone(TimeZone.getTimeZone("GMT"));
 	}
-
 	public Date parseDateFromString(String value)
 	{
 		Date date = null;
@@ -21,7 +22,12 @@ public abstract class SalesForceObject
 		{
 			try 
 			{
-				date = dateParser.parse(value);
+				if(value.length() == 10)
+					date = dateParser.parse(value);
+				else if(value.length() == 24)
+					date = timeParserNoZone.parse(value);
+				else
+					date = timeParser.parse(value);
 			} 
 			catch (ParseException e) {
 				e.printStackTrace();
