@@ -160,8 +160,10 @@ public class DataService implements Runnable
 
 	public void cleanup()
 	{
-		this.getStreamingTask().cleanup();
-		this.evaluatorTask.setTerminateFlag(true);
+		if(this.getStreamingTask() != null)
+			this.getStreamingTask().cleanup();
+		if(this.evaluatorTask != null)
+			this.evaluatorTask.setTerminateFlag(true);
 		if(this.evaluatorThread != null)
 		{
 			try 

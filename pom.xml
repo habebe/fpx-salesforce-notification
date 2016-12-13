@@ -14,8 +14,9 @@
 	</properties>
 
 	<modules>
-		<module>common</module>
-		<module>data-service</module>
+	  <module>common</module>
+	  <module>data-service</module>
+	  <module>web-application</module>
 	</modules>
 
 	<dependencies>

@@ -7,7 +7,7 @@
 		<property name="hibernate.connection.driver_class">org.apache.derby.jdbc.ClientDriver</property>
 		<property name="hibernate.connection.url">jdbc:derby://localhost:1527/fpx;create=true</property>
 		<property name="hibernate.dialect">org.hibernate.dialect.DerbyTenSevenDialect</property>
-		<property name="hibernate.connection.pool_size">2</property>
+		<property name="hibernate.connection.pool_size">5</property>
 		<property name="hibernate.current_session_context_class">thread</property>
 		<property name="hibernate.cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
 		<property name="hibernate.show_sql">false</property>

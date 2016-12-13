@@ -18,14 +18,18 @@ public class NotificationMessage
 	private String opportunityId;
 	private Date timeEvaluated;
 	private String message;
+	private String userName;
+	private String opportunityOwnerName;
 	
 	public void setUser(User user)
 	{
 		this.setUserId(user.getId());
+		this.setUserName(user.getName());
 	}
 	public void setOwner(User user)
 	{
 		this.setOpportunityOwnerId(user.getId());
+		this.setOpportunityOwnerName(user.getName());
 	}
 	public void setOpportunity(Opportunity opportunity)
 	{
@@ -106,4 +110,17 @@ public class NotificationMessage
 				this.getUserId(),this.getOpportunityOwnerId()
 				);
 	}
+	public String getUserName() {
+		return userName;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+	public String getOpportunityOwnerName() {
+		return opportunityOwnerName;
+	}
+	public void setOpportunityOwnerName(String opportunityOwnerName) {
+		this.opportunityOwnerName = opportunityOwnerName;
+	}
+	
 }

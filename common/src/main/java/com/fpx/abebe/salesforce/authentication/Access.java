@@ -1,5 +1,8 @@
 package com.fpx.abebe.salesforce.authentication;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.apache.http.message.BasicHeader;
 import org.json.JSONObject;
 
@@ -12,6 +15,7 @@ public class Access
 	private String tokenType;
 	private String issuedAt;
 	private BasicHeader oAuthHeader;
+	private String userId;
 	
 	public Access(JSONObject jsonObject)
 	{
@@ -19,6 +23,16 @@ public class Access
 		this.setSignature(jsonObject.getString("signature"));
 		this.setInstanceURL(jsonObject.getString("instance_url"));
 		this.setId(jsonObject.getString("id"));
+		try 
+		{
+			URL url = new URL(this.getId());
+			String path = url.getPath();
+			String[] parts = path.split("/");
+			this.setUserId(parts[parts.length-1]);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		
 		this.setTokenType("token_type");
 		this.setIssuedAt(jsonObject.getString("issued_at"));
 		this.setOAuthHeader(new BasicHeader("Authorization", "OAuth " + this.getToken()));
@@ -60,11 +74,6 @@ public class Access
 	public void setIssuedAt(String issuedAt) {
 		this.issuedAt = issuedAt;
 	}
-	@Override
-	public String toString() {
-		return "Access [token=" + token + ", signature=" + signature + ", instanceURL=" + instanceURL + ", id=" + id
-				+ ", tokenType=" + tokenType + ", issuedAt=" + issuedAt + "]";
-	}
 
 	public BasicHeader getOAuthHeader() {
 		return oAuthHeader;
@@ -73,20 +82,21 @@ public class Access
 	public void setOAuthHeader(BasicHeader oAuthHeader) {
 		this.oAuthHeader = oAuthHeader;
 	}
-	
-	
-	
-	
-	
-	
-	/*
-	{"access_token":
-		
-		"00D41000001OwxK!ARIAQMNlfxbk0q.7S_HxY8ssUfo4Wd0b8.SDuzuOOLP4E2oFFrLWYyW.836S4.37W5xxmKZwCTx7eXMcJeUfxduTl5Op0MGS",
-		"signature":"UWYzr7N2qPhFIkdJqjrDHRhiKxBAm03t7Xnw+A/cPq0=","instance_url":"https://na35.salesforce.com",
-		"id":"https://login.salesforce.com/id/00D41000001OwxKEAS/00541000001LmWGAA0","token_type":"Bearer",
-		"issued_at":"1481134835673"}
-		
-		*/
 
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	@Override
+	public String toString() {
+		return "Access [token=" + token + ", signature=" + signature + ", instanceURL=" + instanceURL + ", id=" + id
+				+ ", tokenType=" + tokenType + ", issuedAt=" + issuedAt + ", oAuthHeader=" + oAuthHeader + ", userId="
+				+ userId + "]";
+	}
+	
+	
 }

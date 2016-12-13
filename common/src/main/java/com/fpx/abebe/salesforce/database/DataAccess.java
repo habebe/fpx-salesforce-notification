@@ -8,6 +8,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 
 import com.fpx.abebe.salesforce.model.NotificationCriteria;
+import com.fpx.abebe.salesforce.model.NotificationMessage;
 import com.fpx.abebe.salesforce.model.Opportunity;
 import com.fpx.abebe.salesforce.model.SalesForceObject;
 import com.fpx.abebe.salesforce.model.User;
@@ -31,7 +32,7 @@ public class DataAccess
 		return sessionFactory;
 	}
 
-	public synchronized void closeSession()
+	public synchronized void closeSessionFactory()
 	{
 		if(this.sessionFactory != null)
 			this.sessionFactory.close();
@@ -48,7 +49,7 @@ public class DataAccess
 		session.getTransaction().commit();
 		session.close();
 	}
-	
+
 	public NotificationCriteriaCollection queryNotificationCriteriaForUser(User user)
 	{
 		NotificationCriteriaCollection collection;
@@ -56,7 +57,7 @@ public class DataAccess
 		collection = this.queryNotificationCriteriaForUser(user,session);
 		return collection;
 	}
-	
+
 	public NotificationCriteriaCollection queryNotificationCriteriaForUser(User user,Session session)
 	{
 		NotificationCriteriaCollection collection;
@@ -64,7 +65,16 @@ public class DataAccess
 		collection.collect(session,user);
 		return collection;
 	}
-	
+
+	public List<Opportunity> queryOpportunityForUser(String userId)
+	{
+		Session session = this.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		List<Opportunity> result = this.queryOpportunityForUser(userId, session);
+		session.getTransaction().commit();
+		return result;
+	}
+
 	public List<Opportunity> queryOpportunityForUser(User user)
 	{
 		Session session = this.getSessionFactory().getCurrentSession();
@@ -73,21 +83,26 @@ public class DataAccess
 		session.getTransaction().commit();
 		return result;
 	}
-	
+
 	public List<Opportunity> queryOpportunityForUser(User user,Session session)
 	{
+		return queryOpportunityForUser(user.getId(),session);
+	}	
+
+	public List<Opportunity> queryOpportunityForUser(String userId,Session session)
+	{
 		Query<Opportunity> query = session.createQuery("from Opportunity where ownerId=:ownerId",Opportunity.class); 
-		query.setParameter("ownerId",user.getId());
+		query.setParameter("ownerId",userId);
 		return query.getResultList();
 	}	
-	
+
 	public List<User> queryUsers(Session session)
 	{
 		Query<User> query = session.createQuery("from User",User.class); 
 		List<User> result = query.getResultList();
 		return result;
 	}
-	
+
 	public List<User> queryUsers()
 	{
 		Session session = this.getSessionFactory().getCurrentSession();
@@ -111,11 +126,38 @@ public class DataAccess
 		return result;
 	}
 
-	public void save(NotificationCriteria criteria) 
+	public boolean save(NotificationCriteria criteria) 
 	{
 		Session session = this.getSessionFactory().getCurrentSession();
 		session.beginTransaction();
 		session.save(criteria);
 		session.getTransaction().commit();
-	}		
+		return true;
+	}	
+
+	public boolean deleteNotificationCriteria(int id)
+	{
+		Session session = this.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		Query<?> q = session.createQuery("delete from NotificationCriteria where id = :id ");
+		q.setParameter("id", id);
+		q.executeUpdate();
+		session.getTransaction().commit();
+		session.close();
+		return true;
+	}
+
+	public List<NotificationMessage> queryNotificationMessageForUser(String userId) 
+	{
+		Session session = this.getSessionFactory().openSession();
+		session.beginTransaction();
+		Query<NotificationMessage> query = 
+				session.createQuery("from NotificationMessage where userId=:userId",
+						NotificationMessage.class); 
+		query.setParameter("userId",userId);
+		List<NotificationMessage> result = query.getResultList();
+		session.getTransaction().commit();
+		session.close();
+		return result;
+	}
 }

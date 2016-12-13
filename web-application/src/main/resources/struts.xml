@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+	"http://struts.apache.org/dtds/struts-2.5.dtd">
+<struts>
+
+
+
+	<!-- <constant name="struts.enable.DynamicMethodInvocation" value="false"/ -->
+	<constant name="struts.devMode" value="true" />
+
+
+
+	<package name="default" extends="struts-default" namespace="/authenticate">
+		<action name="login" method="login"
+			class="com.fpx.abebe.salesforce.web.actions.AuthenticateAction">
+			<result name="success" type="redirect">/jsp/mainpage.jsp</result>
+			<result name="login" type="redirect">/jsp/login.jsp</result>
+		</action>
+		<action name="logout" method="logout"
+			class="com.fpx.abebe.salesforce.web.actions.AuthenticateAction">
+			<result name="login" type="redirect">/jsp/login.jsp</result>
+		</action>
+
+
+	</package>
+
+	<package name="Opportunity" extends="json-default" namespace="/opportunity">
+		<interceptors>
+			<interceptor
+				class="com.fpx.abebe.salesforce.web.interceptor.AccessCheckInterceptor"
+				name="accessInterceptor">
+			</interceptor>
+			<interceptor-stack name="loginStack">
+				<interceptor-ref name="accessInterceptor" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+		</interceptors>
+
+		<action name="all"
+			class="com.fpx.abebe.salesforce.web.actions.QueryOpportunityAction">
+			<interceptor-ref name="loginStack" />
+			<result name="error">/jsp/login.jsp</result>
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+				<param name="root">result</param>
+			</result>
+		</action>
+	</package>
+
+	<package name="Criteria" extends="json-default" namespace="/criteria">
+		<interceptors>
+			<interceptor
+				class="com.fpx.abebe.salesforce.web.interceptor.AccessCheckInterceptor"
+				name="accessInterceptor">
+			</interceptor>
+
+			<interceptor-stack name="loginStack">
+				<interceptor-ref name="accessInterceptor" />
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="json">
+					<param name="enableSMD">true</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+
+		<action name="add"
+			class="com.fpx.abebe.salesforce.web.actions.AddCriteriaAction" method="add">
+			<interceptor-ref name="loginStack" />
+			<result name="login">/jsp/login.jsp</result>
+			<result type="json"/>
+		</action>
+		
+		<action name="update"
+			class="com.fpx.abebe.salesforce.web.actions.UpdateCriteriaAction" method="update">
+			<interceptor-ref name="loginStack" />
+			<result name="login">/jsp/login.jsp</result>
+			<result type="json"/>
+		</action>
+		
+		<action name="get"
+			class="com.fpx.abebe.salesforce.web.actions.GetCriteriaAction" method="get">
+			<interceptor-ref name="loginStack" />
+			<result name="login">/jsp/login.jsp</result>
+			<result type="json"/>
+		</action>
+		
+		<action name="delete"
+			class="com.fpx.abebe.salesforce.web.actions.DeleteCriteriaAction" method="delete">
+			<interceptor-ref name="loginStack" />
+			<result name="error"></result>
+			<result type="json"/>
+		</action>
+	</package>
+
+	
+	<package name="NotificationMessage" extends="json-default" namespace="/notification">
+		<interceptors>
+			<interceptor
+				class="com.fpx.abebe.salesforce.web.interceptor.AccessCheckInterceptor"
+				name="accessInterceptor">
+			</interceptor>
+
+			<interceptor-stack name="loginStack">
+				<interceptor-ref name="accessInterceptor" />
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="json">
+					<param name="enableSMD">true</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+
+		<action name="get"
+			class="com.fpx.abebe.salesforce.web.actions.QueryNotificationAction" method="execute">
+			<interceptor-ref name="loginStack" />
+			<result name="login">/jsp/login.jsp</result>
+			<result type="json"/>
+		</action>
+
+	</package>
+</struts>
