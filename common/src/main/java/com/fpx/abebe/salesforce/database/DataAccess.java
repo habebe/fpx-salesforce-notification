@@ -139,14 +139,55 @@ public class DataAccess
 	{
 		Session session = this.getSessionFactory().getCurrentSession();
 		session.beginTransaction();
-		Query<?> q = session.createQuery("delete from NotificationCriteria where id = :id ");
-		q.setParameter("id", id);
-		q.executeUpdate();
+		Query<?> criteriaDelete = session.createQuery("delete from NotificationCriteria where id = :id ");
+		criteriaDelete.setParameter("id", id);
+		criteriaDelete.executeUpdate();
+		
+		Query<?> notificationDelete = session.createQuery(
+				"delete from NotificationMessage where criteriaId = :id ");
+		notificationDelete.setParameter("id", id);
+		notificationDelete.executeUpdate();
+		
 		session.getTransaction().commit();
 		session.close();
 		return true;
 	}
 
+	public boolean deleteNotificationForCriteria(int id,Session session)
+	{	
+		Query<?> notificationDelete = session.createQuery(
+				"delete from NotificationMessage where criteriaId = :id ");
+		notificationDelete.setParameter("id", id);
+		notificationDelete.executeUpdate();
+		return true;
+	}
+	
+	public boolean deleteNotificationForCriteriaAndOpportunity(int cid,
+			String oid,
+			Session session)
+	{	
+		Query<?> notificationDelete = session.createQuery(
+				"delete from NotificationMessage where criteriaId = :id and opportunityId = :oid");
+		notificationDelete.setParameter("id", cid);
+		notificationDelete.setParameter("oid", oid);
+		notificationDelete.executeUpdate();
+		return true;
+	}
+	
+	public boolean deleteOpportunity(String oid,Session session)
+	{	
+		Query<?> opportunityDelete = session.createQuery(
+				"delete from Opportunity where id = :oid");
+		opportunityDelete.setParameter("oid", oid);
+		opportunityDelete.executeUpdate();
+		
+		Query<?> notificationDelete = session.createQuery(
+				"delete from NotificationMessage where opportunityId = :oid");
+		notificationDelete.setParameter("oid", oid);
+		notificationDelete.executeUpdate();
+		return true;
+	}
+	
 	public List<NotificationMessage> queryNotificationMessageForUser(String userId) 
 	{
 		Session session = this.getSessionFactory().openSession();

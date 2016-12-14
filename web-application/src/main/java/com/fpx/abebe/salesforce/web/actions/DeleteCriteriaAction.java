@@ -13,10 +13,8 @@ public class DeleteCriteriaAction extends AbstractAction
 	public String delete() 
 	{
 		Access access = this.getAccess();
-		System.out.println("DeleteCriterionAction.delete access:" + access);
 		if(access != null)
 		{
-			System.out.println("Delete Criteria user:"+access.getUserId()+" " +this.toString());
 			Application application = this.getApplication();
 			DataAccess dataAccess = application.getDataAccess();
 			dataAccess.deleteNotificationCriteria(this.getId());

@@ -66,14 +66,6 @@ public class StreamingClientServiceTask extends AbstractServiceTask
 			bayeuxClient.getChannel(SalesForceURL.getStreamingChannelUrl(
 					this.getDataService().getPushTopicName())).
 			subscribe(new StreamingClientMessageListener(this));
-			
-			
-			
-			/*new MessageListener() {
-				public void onMessage(ClientSessionChannel channel, Message message) {
-					getLogger().info("+++Received Message: " + message);
-				}
-			});*/
 		}
 		return status;
 	}

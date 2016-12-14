@@ -21,10 +21,8 @@ public class UpdateCriteriaAction extends AbstractAction
 	public String update() 
 	{
 		Access access = this.getAccess();
-		System.out.println("UpdateCriterionAction.update access:" + access);
 		if(access != null)
 		{
-			System.out.println("Update Criteria user:"+access.getUserId()+" " +this.toString());
 			Application application = this.getApplication();
 			DataAccess dataAccess = application.getDataAccess();
 			Session session = dataAccess.getSessionFactory().getCurrentSession();

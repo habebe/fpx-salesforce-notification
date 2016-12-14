@@ -36,12 +36,19 @@ public class CLI
 				.required(false)
 				.desc("initialize database.")
 				.build();
-
+		Option shutdownTimeOption = Option.builder("s")
+				.longOpt("shutdown_in")
+				.required(false)
+				.hasArg()
+				.desc("Time the server should be alive in minutes.")
+				.build();
+		
 
 		Options options = new Options();
 		options.addOption(helpOption);
 		options.addOption(propertyFileNameOption);
 		options.addOption(initializeOption);
+		options.addOption(shutdownTimeOption);
 		CommandLineParser parser = new DefaultParser();
 		CommandLine cmdLine = parser.parse(options, args);
 
@@ -63,6 +70,11 @@ public class CLI
 			{
 				dataService.getLogger().error("Property file is not given.");
 				status = false;
+			}
+			if(cmdLine.hasOption("shutdown_in"))
+			{
+				int minutesToShutdown = Integer.parseInt(cmdLine.getOptionValue("shutdown_in"));
+				dataService.setMinutesToShutdown(minutesToShutdown);
 			}
 		}
 		return status;

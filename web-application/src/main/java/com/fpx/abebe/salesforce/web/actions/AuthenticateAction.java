@@ -14,14 +14,10 @@ public class AuthenticateAction extends AbstractAction
 	{
 		
 		Application application = this.getApplication();
-		System.out.println("LOGIN action app:" + application);
 		if(application != null)
 		{
 			Access access = application.login(this.getInputEmail(),
 					this.getInputPassword());
-			System.out.println("Email:" + this.getInputPassword());
-			System.out.println("Password:" + this.getInputEmail());
-			System.out.println("LOGIN action access:" + access);
 			if(access != null)
 			{
 				this.saveAccess(access);
@@ -33,9 +29,7 @@ public class AuthenticateAction extends AbstractAction
 
 	public String logout()
 	{
-		System.out.println("LOGOUT action acess:" + this.getAccess());
 		this.getSession().clear();
-		System.out.println("LOGOUT action acess:" + this.getAccess());
 		return ActionSupport.LOGIN; 
 	}
 	

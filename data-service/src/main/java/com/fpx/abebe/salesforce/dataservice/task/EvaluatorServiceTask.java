@@ -27,6 +27,7 @@ public class EvaluatorServiceTask extends RunnableServiceTask
 	private JavaScriptEvaluator evaluator = new JavaScriptEvaluator();
 	private int pollSeconds;
 	private boolean terminateFlag = false;
+	List<Integer> disabledCriteria = new ArrayList<Integer>();
 	public EvaluatorServiceTask(DataService dataService,int pollSeconds) 
 	{
 		super(dataService);
@@ -37,6 +38,7 @@ public class EvaluatorServiceTask extends RunnableServiceTask
 	{
 		this.getLogger().info(getClass() + "evaluate");
 		notificationMessages.clear();
+		disabledCriteria.clear();
 		DataAccess dataAccess = this.getDataAccess();
 		Session session = dataAccess.getSessionFactory().getCurrentSession();
 		session.beginTransaction();
@@ -49,6 +51,10 @@ public class EvaluatorServiceTask extends RunnableServiceTask
 			List<NotificationCriteria> criteria = collection.getResult();
 			List<Opportunity> opportunities = dataAccess.queryOpportunityForUser(user,session);
 			this.evaluateForUser(session,user,criteria,opportunities,date); 
+		}
+		for(int id:disabledCriteria)
+		{
+			dataAccess.deleteNotificationForCriteria(id, session);
 		}
 		session.getTransaction().commit();
 		return this.submitNotificationMessages();
@@ -64,6 +70,7 @@ public class EvaluatorServiceTask extends RunnableServiceTask
 			session.beginTransaction();
 			for(NotificationMessage message:notificationMessages)
 			{
+				getLogger().info("Emit Notification:" + message);
 				session.saveOrUpdate(message);
 			}
 			session.getTransaction().commit();
@@ -81,26 +88,40 @@ public class EvaluatorServiceTask extends RunnableServiceTask
 	{
 		for(NotificationCriteria c:criteria)
 		{
-			JavaScriptCriteriaEvaluator cEvaluator = new JavaScriptCriteriaEvaluator(c,evaluator);
-			for(Opportunity opportunity:opportunities)
+			if(c.isEnabled() == true)
 			{
-				EvaluatorResult result = cEvaluator.evaluate(opportunity, user);
-				if((result.getStatus() == EvaluatorResultStatus.Match) || 
-						(result.getStatus() == EvaluatorResultStatus.ErrorInExpressionEvaluation))
+				JavaScriptCriteriaEvaluator cEvaluator = new JavaScriptCriteriaEvaluator(c,evaluator);
+				for(Opportunity opportunity:opportunities)
 				{
-					NotificationMessage message = new NotificationMessage();
-					message.setCriteria(c);
-					message.setOpportunity(opportunity);
-					message.setOwner(user);
-					message.setUser(user);
-					if(result.getMessage() != null)
-						message.setMessage(result.getMessage());
-					message.setTimeEvaluated(date);
-					message.generateId();
-					notificationMessages.add(message);
-					this.generateNotificationMessagesForManagers(session,user,user,c,
-							opportunity,result,date);
+					EvaluatorResult result = cEvaluator.evaluate(opportunity, user);
+					if((result.getStatus() == EvaluatorResultStatus.Match) || 
+							(result.getStatus() == EvaluatorResultStatus.ErrorInExpressionEvaluation))
+					{
+						NotificationMessage message = new NotificationMessage();
+						message.setCriteria(c);
+						message.setOpportunity(opportunity);
+						message.setOwner(user);
+						message.setUser(user);
+						if(result.getMessage() != null)
+							message.setMessage(result.getMessage());
+						message.setTimeEvaluated(date);
+						message.generateId();
+						notificationMessages.add(message);
+						this.generateNotificationMessagesForManagers(session,user,user,c,
+								opportunity,result,date);
+					}
+					else
+					{
+						this.getDataAccess().deleteNotificationForCriteriaAndOpportunity(
+								c.getId(),
+								opportunity.getId(),
+								session);
+					}
 				}
+			}
+			else
+			{
+				this.disabledCriteria.add(c.getId());
 			}
 		}
 		return true;
@@ -126,7 +147,7 @@ public class EvaluatorServiceTask extends RunnableServiceTask
 			message.setOwner(owner);
 			if(result.getMessage() != null)
 				message.setMessage(result.getMessage());
-			message.setUser(user);
+			message.setUser(manager);
 			message.setTimeEvaluated(date);
 			message.generateId();
 			notificationMessages.add(message);
@@ -145,6 +166,7 @@ public class EvaluatorServiceTask extends RunnableServiceTask
 						this.getPollSeconds(),
 						TimeUnit.SECONDS
 						);
+				this.handleMessage(streamingMessage);
 				getLogger().info(getClass().getName() + " message: " + streamingMessage);
 			} 
 			catch (InterruptedException e) 
@@ -152,6 +174,24 @@ public class EvaluatorServiceTask extends RunnableServiceTask
 				e.printStackTrace();
 			}
 			this.evaluate();
+		}
+	}
+
+	private void handleMessage(OpportunityStreamingMessage streamingMessage) 
+	{
+		if(streamingMessage != null)
+		{
+			String messageType = streamingMessage.getData().getEvent().getType();
+			Opportunity object = streamingMessage.getData().getSobject();
+			getLogger().info("Message Type : " + messageType);
+			getLogger().info("Object : " + object);
+			Session session = this.getDataAccess().getSessionFactory().getCurrentSession();
+			session.beginTransaction();
+			if(messageType.equals("deleted"))
+				this.getDataAccess().deleteOpportunity(object.getId(), session);
+			else
+				session.saveOrUpdate(object);
+			session.getTransaction().commit();
 		}
 	}
 

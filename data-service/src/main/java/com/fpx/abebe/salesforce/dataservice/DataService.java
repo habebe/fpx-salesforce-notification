@@ -36,6 +36,8 @@ public class DataService implements Runnable
 	private BlockingQueue<OpportunityStreamingMessage> messageQueue = new ArrayBlockingQueue<OpportunityStreamingMessage>(64);
 	private EvaluatorServiceTask evaluatorTask = new EvaluatorServiceTask(this,10);
 	private Thread evaluatorThread = null;
+	private int minutesToShutdown = 5;
+	
 	public String getPropertyFileName() {
 		return propertyFileName;
 	}
@@ -149,7 +151,7 @@ public class DataService implements Runnable
 				this.startEvaluatorTask();
 			try 
 			{
-				Thread.sleep(4*60*1000);
+				Thread.sleep(this.getMinutesToShutdown()*60*1000);
 			} 
 			catch (InterruptedException e) 
 			{
@@ -194,5 +196,11 @@ public class DataService implements Runnable
 	}
 	public EvaluatorServiceTask getEvaluatorTask() {
 		return evaluatorTask;
+	}
+	public int getMinutesToShutdown() {
+		return minutesToShutdown;
+	}
+	public void setMinutesToShutdown(int minutesToShutdown) {
+		this.minutesToShutdown = minutesToShutdown;
 	}
 }

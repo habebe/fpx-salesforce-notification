@@ -1,4 +1,8 @@
 package com.fpx.abebe.salesforce.notification;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import javax.script.ScriptException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -12,6 +16,37 @@ public class JavaScriptCriteriaEvaluator
 {
 	private NotificationCriteria criteria;
 	private JavaScriptEvaluator evaluator;
+	private static String expressionEvaluationContent;
+	private final static String expressionEvaluationFilename = "ExpressionEvaluation.js";
+	static 
+	{
+		JavaScriptCriteriaEvaluator.loadExpressionEvaluationContent();
+	}
+
+	private static void loadExpressionEvaluationContent()
+	{
+		try
+		{
+			ClassLoader classLoader = JavaScriptCriteriaEvaluator.class.getClassLoader();
+			InputStream stream = classLoader.getResourceAsStream(expressionEvaluationFilename);
+			BufferedReader buffer = new BufferedReader(new InputStreamReader(stream));
+			String line;
+			line = buffer.readLine();
+			setExpressionEvaluationContent("");
+			while(line != null)
+			{
+				setExpressionEvaluationContent(getExpressionEvaluationContent() + line + "\n");
+				line = buffer.readLine();
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			setExpressionEvaluationContent(null);
+		}
+		System.out.println("ExpressionEvalContent:" + getExpressionEvaluationContent());
+	}
+
 	public JavaScriptCriteriaEvaluator(NotificationCriteria criteria,JavaScriptEvaluator evaluator)
 	{
 		this.setCriteria(criteria);
@@ -32,10 +67,13 @@ public class JavaScriptCriteriaEvaluator
 		EvaluatorResult result = new EvaluatorResult();
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			this.evaluator.evaluate("var FPX = {'now':new Date()};");
+			if(expressionEvaluationContent != null)
+			{
+				this.evaluator.evaluate(expressionEvaluationContent);
+			}
 			this.evaluator.evaluate(String.format("var Opportunity=%s;",mapper.writeValueAsString(opportunity)));
 			this.evaluator.evaluate(String.format("var Owner=%s;",mapper.writeValueAsString(owner)));
-			
+
 			Object evaluationResult = this.evaluator.evaluate(this.getCriteria().getExpression());
 			if(evaluationResult != null)
 			{
@@ -44,7 +82,10 @@ public class JavaScriptCriteriaEvaluator
 					Boolean booleanResult = (Boolean)evaluationResult;
 					result.setMessage(null);
 					if(booleanResult)
+					{
 						result.setStatus(EvaluatorResultStatus.Match);
+						result.setMessage("Match");
+					}
 					else
 						result.setStatus(EvaluatorResultStatus.NoMatch);
 				}
@@ -64,7 +105,7 @@ public class JavaScriptCriteriaEvaluator
 		catch (JsonProcessingException e) 
 		{
 			result.setStatus(EvaluatorResultStatus.ErrorInExpressionEvaluation);
-			result.setMessage(e.getCause().getMessage());
+			result.setMessage("Object Error:" + e.getCause().getMessage());
 		} 
 		catch (ScriptException e) 
 		{
@@ -81,5 +122,13 @@ public class JavaScriptCriteriaEvaluator
 
 	public void setEvaluator(JavaScriptEvaluator evaluator) {
 		this.evaluator = evaluator;
+	}
+
+	public static String getExpressionEvaluationContent() {
+		return expressionEvaluationContent;
+	}
+
+	public static void setExpressionEvaluationContent(String expressionEvaluationContent) {
+		JavaScriptCriteriaEvaluator.expressionEvaluationContent = expressionEvaluationContent;
 	}
 }

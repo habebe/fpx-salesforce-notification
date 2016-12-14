@@ -76,12 +76,7 @@ public class NotificationMessage
 	public void setTimeEvaluated(Date timeEvaluated) {
 		this.timeEvaluated = timeEvaluated;
 	}
-	@Override
-	public String toString() {
-		return "NotificationMessage [id=" + id + ", userId=" + userId + ", opportunityOwnerId=" + opportunityOwnerId
-				+ ", criteriaId=" + criteriaId + ", opportunityId=" + opportunityId + ", timeEvaluated=" + timeEvaluated
-				+ "]";
-	}
+
 	public String getMessage() {
 		return message;
 	}
@@ -121,6 +116,13 @@ public class NotificationMessage
 	}
 	public void setOpportunityOwnerName(String opportunityOwnerName) {
 		this.opportunityOwnerName = opportunityOwnerName;
+	}
+	@Override
+	public String toString() {
+		return "NotificationMessage [id=" + id + ", userId=" + userId + ", opportunityOwnerId=" + opportunityOwnerId
+				+ ", criteriaId=" + criteriaId + ", opportunityId=" + opportunityId + ", timeEvaluated=" + timeEvaluated
+				+ ", message=" + message + ", userName=" + userName + ", opportunityOwnerName=" + opportunityOwnerName
+				+ "]";
 	}
 	
 }

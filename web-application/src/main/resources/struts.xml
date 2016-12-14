@@ -49,6 +49,28 @@
 		</action>
 	</package>
 
+	<package name="User" extends="json-default" namespace="/user">
+		<interceptors>
+			<interceptor
+				class="com.fpx.abebe.salesforce.web.interceptor.AccessCheckInterceptor"
+				name="accessInterceptor">
+			</interceptor>
+			<interceptor-stack name="loginStack">
+				<interceptor-ref name="accessInterceptor" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+		</interceptors>
+
+		<action name="get"
+			class="com.fpx.abebe.salesforce.web.actions.GetUserInfoAction"
+			>
+			<interceptor-ref name="loginStack" />
+			<result name="error">/jsp/login.jsp</result>
+			<result type="json">
+			</result>
+		</action>
+	</package>
+
 	<package name="Criteria" extends="json-default" namespace="/criteria">
 		<interceptors>
 			<interceptor
