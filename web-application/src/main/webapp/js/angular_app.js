@@ -12,7 +12,7 @@ controller("fpx-sfn-ctl-main",['$cookies','$http','$location',function ($cookies
 			this.setNagivationState(savedNavigationState);
 		}
 		var savedOpportunityDataDescription = $cookies.get('op-state');
-		if(typeof savedOpportunityDataNames == "string")
+		if(typeof savedOpportunityDataDescription == "string")
 		{
 			this.opportunityDataDescription = JSON.parse(savedOpportunityDataDescription);
 		}
@@ -137,7 +137,10 @@ controller("fpx-sfn-ctl-main",['$cookies','$http','$location',function ($cookies
 		}
 		).
 		error(function (data, status, headers, config) {
-			alert("ERROR Data " + data + " Status:" + status + " header:" + headers) ;
+			alert("SENDING TO /newValue.");
+			$location.path('/newValue');
+			
+			//alert("ERROR Data " + data + " Status:" + status + " header:" + headers) ;
 			result = data;
 			object = [];
 		});
@@ -152,7 +155,9 @@ controller("fpx-sfn-ctl-main",['$cookies','$http','$location',function ($cookies
 			object.refreshCriteriaData();
 				}).
 				error(function (data, status, headers, config) {
-					alert("ERROR Data " + data + " Status:" + status + " header:" + header) ;
+					alert("SENDING TO /newValue.");
+					$location.path('/newValue');
+					//alert("ERROR Data " + data + " Status:" + status + " header:" + header) ;
 					result = data;          
 				});
 	}
@@ -168,12 +173,12 @@ controller("fpx-sfn-ctl-main",['$cookies','$http','$location',function ($cookies
 			object.refreshNotificationData();
 				}).
 				error(function (data, status, headers, config) {
-					alert("ERROR Data " + data + " Status:" + status + " header:" + header) ;
+					alert("SENDING TO /newValue.");
+					$location.path('/newValue');
+					//alert("ERROR Data " + data + " Status:" + status + " header:" + header) ;
 					result = data;          
 				});
 	}
-
-
 
 	this.refreshOpportunityData = function()
 	{
@@ -364,7 +369,6 @@ controller("fpx-sfn-ctl-main",['$cookies','$http','$location',function ($cookies
 		{"name":"lastModifiedById","show":false,"header":"LastModifiedById"},
 		{"name":"lastModifiedDate","show":false,"header":"LastModifiedDate"},
 		{"name":"mainCompetitors__c","show":false,"header":"MainCompetitors__c"},
-		{"name":"name","show":false,"header":"Name"},
 		{"name":"ownerId","show":false,"header":"OwnerId"},
 		{"name":"private","show":false,"header":"IsPrivate"},
 		{"name":"probability","show":false,"header":"Probability"},
@@ -381,15 +385,16 @@ controller("fpx-sfn-ctl-main",['$cookies','$http','$location',function ($cookies
 		{"name":"enabled","show":true,"header":"Enabled"}
 		];
 	this.notificationDataDescription = [
-		{"name":"opportunityId","show":true,"header":"OpportunityId"},
-		{"name":"userName","show":false,"header":"User"},
-		{"name":"opportunityOwnerName","show":true,"header":"Owner"},
 		{"name":"id","show":false,"header":"Id"},
-		{"name":"userId","show":false,"header":"User Id"},
+		{"name":"recipientId","show":false,"header":"Recipient Id"},
+		{"name":"recipientName","show":false,"header":"Recipient"},
+		{"name":"opportunityId","show":true,"header":"Opportunity Id"},
+		{"name":"opportunityOwnerName","show":true,"header":"Opportunity Owner"},
 		{"name":"opportunityOwnerId","show":false,"header":"Opportunity Owner Id"},
 		{"name":"criteriaId","show":true,"header":"Criteria Id"},
-		{"name":"timeEvaluated","show":true,"header":"Time"},
-		{"name":"message","show":true,"header":"Message"},		
+		{"name":"criteriaOwnerId","show":false,"header":"Criteria Owner Id"},
+		{"name":"criteriaOwnerName","show":true,"header":"Criteria Owner"},
+		{"name":"message","show":true,"header":"Message"}	
 		];
 
 	this.detailedView = false;

@@ -85,6 +85,7 @@
 	</dependencies>
 
 	<build>
+	   <finalName>fpx-sf-notification-webapp</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>

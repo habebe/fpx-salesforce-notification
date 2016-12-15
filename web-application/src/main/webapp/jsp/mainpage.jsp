@@ -92,6 +92,8 @@
   	    Opportunity
   	  </button>
 	  
+	  <label type="submit" class="navbar-right">{{ctl.getUserName() + ' [' + ctl.getUserId() + '] ' }}    </label>
+	  
 	  <!-- Modal -->
 	  <div class="modal fade" id="tablePropertyId" role="dialog">
 	    <div class="modal-dialog">

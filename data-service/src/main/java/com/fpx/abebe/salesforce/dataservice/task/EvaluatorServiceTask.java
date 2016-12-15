@@ -49,7 +49,8 @@ public class EvaluatorServiceTask extends RunnableServiceTask
 			NotificationCriteriaCollection collection = dataAccess.queryNotificationCriteriaForUser(user, 
 					session);
 			List<NotificationCriteria> criteria = collection.getResult();
-			List<Opportunity> opportunities = dataAccess.queryOpportunityForUser(user,session);
+			List<Opportunity> opportunities = dataAccess.queryOpportunityForUserOnly(user.getId(),
+					session);
 			this.evaluateForUser(session,user,criteria,opportunities,date); 
 		}
 		for(int id:disabledCriteria)
@@ -98,17 +99,22 @@ public class EvaluatorServiceTask extends RunnableServiceTask
 							(result.getStatus() == EvaluatorResultStatus.ErrorInExpressionEvaluation))
 					{
 						NotificationMessage message = new NotificationMessage();
-						message.setCriteria(c);
-						message.setOpportunity(opportunity);
-						message.setOwner(user);
-						message.setUser(user);
+						message.setValue(
+								c,
+								opportunity,
+								user, 
+								session.get(User.class, opportunity.getOwnerId()), 
+								session.get(User.class, c.getOwnerId()));
 						if(result.getMessage() != null)
 							message.setMessage(result.getMessage());
 						message.setTimeEvaluated(date);
 						message.generateId();
 						notificationMessages.add(message);
-						this.generateNotificationMessagesForManagers(session,user,user,c,
-								opportunity,result,date);
+						if(c.getOwnerId().equals(user.getId()) == false)
+						{
+							this.generateNotificationMessagesForManagers(session,user,user,c,
+									opportunity,result,date);
+						}
 					}
 					else
 					{
@@ -142,17 +148,23 @@ public class EvaluatorServiceTask extends RunnableServiceTask
 		{
 			User manager = this.getDataAccess().queryUser(managerId, session);
 			NotificationMessage message = new NotificationMessage();
-			message.setCriteria(criteria);
-			message.setOpportunity(opportunity);
-			message.setOwner(owner);
+			message.setValue(
+					criteria,
+					opportunity,
+					manager, 
+					session.get(User.class, opportunity.getOwnerId()), 
+					session.get(User.class, criteria.getOwnerId()));
 			if(result.getMessage() != null)
 				message.setMessage(result.getMessage());
-			message.setUser(manager);
 			message.setTimeEvaluated(date);
 			message.generateId();
 			notificationMessages.add(message);
-			this.generateNotificationMessagesForManagers(session,owner,manager,criteria,
-					opportunity,result,date);
+			if(criteria.getOwnerId().equals(manager.getId()) == false)
+				this.generateNotificationMessagesForManagers(
+						session,owner,
+						manager,criteria,
+						opportunity,result,date
+						);
 
 		}
 	}

@@ -89,13 +89,24 @@ public class DataAccess
 		return queryOpportunityForUser(user.getId(),session);
 	}	
 
-	public List<Opportunity> queryOpportunityForUser(String userId,Session session)
+	public List<Opportunity> queryOpportunityForUserOnly(String userId,Session session)
 	{
-		Query<Opportunity> query = session.createQuery("from Opportunity where ownerId=:ownerId",Opportunity.class); 
+		Query<Opportunity> query = session.createQuery(
+				"from Opportunity where ownerId=:ownerId and isClosed=:isClosed",
+				Opportunity.class); 
 		query.setParameter("ownerId",userId);
+		query.setParameter("isClosed",false);
 		return query.getResultList();
 	}	
 
+	public List<Opportunity> queryOpportunityForUser(String userId,Session session)
+	{
+		OpportunityCollection collection = new OpportunityCollection();
+		collection.collect(session, userId);
+		List<Opportunity> result = collection.getResult();
+		return result;
+	}	
+	
 	public List<User> queryUsers(Session session)
 	{
 		Query<User> query = session.createQuery("from User",User.class); 
@@ -193,7 +204,7 @@ public class DataAccess
 		Session session = this.getSessionFactory().openSession();
 		session.beginTransaction();
 		Query<NotificationMessage> query = 
-				session.createQuery("from NotificationMessage where userId=:userId",
+				session.createQuery("from NotificationMessage where recipientId=:userId",
 						NotificationMessage.class); 
 		query.setParameter("userId",userId);
 		List<NotificationMessage> result = query.getResultList();

@@ -42,7 +42,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>fpx.salesforce.notification</finalName>
+		<finalName>fpx-sf-notification-data-service</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
