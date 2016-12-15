@@ -137,8 +137,7 @@ controller("fpx-sfn-ctl-main",['$cookies','$http','$location',function ($cookies
 		}
 		).
 		error(function (data, status, headers, config) {
-			alert("SENDING TO /newValue.");
-			$location.path('/newValue');
+			$location.path('../jsp/login.jsp');
 			
 			//alert("ERROR Data " + data + " Status:" + status + " header:" + headers) ;
 			result = data;
@@ -155,8 +154,7 @@ controller("fpx-sfn-ctl-main",['$cookies','$http','$location',function ($cookies
 			object.refreshCriteriaData();
 				}).
 				error(function (data, status, headers, config) {
-					alert("SENDING TO /newValue.");
-					$location.path('/newValue');
+					$location.path('../jsp/login.jsp');
 					//alert("ERROR Data " + data + " Status:" + status + " header:" + header) ;
 					result = data;          
 				});
@@ -173,8 +171,7 @@ controller("fpx-sfn-ctl-main",['$cookies','$http','$location',function ($cookies
 			object.refreshNotificationData();
 				}).
 				error(function (data, status, headers, config) {
-					alert("SENDING TO /newValue.");
-					$location.path('/newValue');
+					$location.path('../jsp/login.jsp');
 					//alert("ERROR Data " + data + " Status:" + status + " header:" + header) ;
 					result = data;          
 				});
